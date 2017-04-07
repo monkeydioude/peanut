@@ -1,16 +1,10 @@
 var oldTimestamp = 0,
     fps = 100 / 60,
-    floorX = 270,
+    floorY = 270,
     gbwidth = 720,
     gbheight = 300;
 
 /* =============================== */
-
-
-
-
-/* =============================== */
-
 var canvas = new Canvas("#gameboard"),
     states = {
         PLAY: play,
@@ -19,11 +13,12 @@ var canvas = new Canvas("#gameboard"),
     },
     state = 'START',
     mouse = new Mouse(canvas.entity),
-    char = new Char();
+    char = null,
+    keyboard = new Keyboard();
 
 canvas.ctx.font = "30px Trebuchet MS";
 canvas.ctx.textAlign = "center";
-
+/* =============================== */
 
 function setState(name)
 {
@@ -34,14 +29,17 @@ function setState(name)
 
 function update()
 {
+    char.update();
     state.update();
 }
 
 function draw()
 {
+    canvas.begin();
     canvas.ctx.clearRect(0, 0, gbwidth, gbheight);
     canvas.ctx.globalAlpha = 1;
     state.draw();
+    canvas.end();
 }
 
 function write(str, x , y)
@@ -62,6 +60,24 @@ function onClick()
     click();
 }
 
+function handleKeyboard()
+{
+    window.onkeydown = function(e) {
+        if (!keyboard.ready || !state.keyhit)
+            return;
+
+        var keyAction = e.keyCode;
+
+        if (keyboard.codes[e.keyCode])
+            keyAction = keyboard.codes[e.keyCode];
+
+        if (!state.keyhit[keyAction])
+            return;
+
+        state.keyhit[keyAction]();
+    };
+}
+
 function process(timestamp)
 {
     if (timestamp - oldTimestamp > fps) {
@@ -73,7 +89,12 @@ function process(timestamp)
 
 function load()
 {
+    delete char;
+    char = new Char();
+    keyboard.ready = true;
+    
     setState('START');
     mouse.entity.addEventListener('click', onClick);
+    handleKeyboard();
     process(0);
 }
