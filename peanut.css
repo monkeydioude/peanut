@@ -1,0 +1,21 @@
+body {
+    background-color: mediumpurple;
+}
+
+.container {
+    width: 1020px;
+    margin: 0 auto;
+}
+
+    .container h1 {
+        text-align: center;
+    }
+
+#gameboard {
+    width: 720px;
+    height: 300px;
+    background-color: ghostwhite;
+    border: 1px solid black;
+    display: block;
+    margin: 0 auto;
+}
