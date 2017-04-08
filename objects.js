@@ -93,20 +93,40 @@ Keyboard.prototype = {
     }
 };
 
+
 var Game = function(){}
 
 Game.prototype = {
+    maxLife:3,
     life: 3,
     points: 0,
-    goal: 10,
+    goal: 20,
     isCompleted: function () {
-        return this.points = this.goal;
+        return this.points == this.goal;
     },
     isOver: function() {
-        return this.life > 0;
+        return this.life === 0;
     },
     lifeDown: function() {
         this.life--;
+    },
+    lifeUp : function() {
+        if (this.life < this.maxLife) {
+            this.life++;
+        }
+    },
+    draw: function() {
+        var heartSize = 25,
+            startY = 20,
+            startX = gbwidth - (this.maxLife * heartSize),
+            str = "";
+        for (var i = 0; i < this.life; i++) {
+            str += "<3 ";
+        }
+        for (i = 0; i < (this.maxLife - this.life); i++) {
+            str += "</3 ";
+        }
+        write(str, startX, startY);
     }
 };
 
@@ -137,7 +157,7 @@ Events.prototype = {
     update: function() {
 //        console.log(this.events[stateName]);
         for (var k in this.events[stateName]) {
-            if (this.events[stateName][k]() == false) {
+            if (this.events[stateName][k] && this.events[stateName][k]() == false) {
                 delete this.events[stateName][k];
             }
         }

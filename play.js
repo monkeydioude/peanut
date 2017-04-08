@@ -15,7 +15,7 @@ function play()
 
     var characterAction = function(char)
     {
-        var jumpHeight = 150,
+        var jumpHeight = 200,
             heightPerFrame = 10,
             currentHeight = 0,
             movement = [-jumpHeight, jumpHeight];
@@ -24,7 +24,6 @@ function play()
 
         return {
             JUMP: function() {
-                console.log('jumping')
                 if (movement.length == 0 && currentHeight == 0) {
                     char.isBusy = false;
                     events.addEvent(function() {
@@ -53,50 +52,17 @@ function play()
     };
 
     var event = function() {
-        var nextEventPop = 0, 
-            trials = [
-                Box,
-                Box,
-                
-            ];
-        
-        var generateNextEventPop = function() {
-            return Math.round(fps * ((eventsPopMiliSecs + (Math.random() * eventsPopRandGap)) / 1000));
-        };
-
-        var resetNextEventPop = function() {
-            nextEventPop = generateNextEventPop();
-        };
-
-        var shouldTriggerEvent = function() {
-            return nextEventPop <= 0;
-        };
-
-        var getNextEvent = function() {
-            
-        }
-        
-        var triggerHandler = function() {
-            if (!shouldTriggerEvent()) {
-                nextEventPop--;
-                return;
-            }
-            resetNextEventPop();
-            var box = new Box();
-            events.addEvent(
-                function() {
-                    return box.update();
-                },
-                function() {
-                    box.draw();
-                });
-        };
-
-        resetNextEventPop();
+        var trials = [
+            new Trial(1, 0.5, Box),
+            new Trial(0.75, 0.3, Cornichon),
+            new Trial(0.5, 0.4, Peanut)
+        ];
 
         return {
             update: function() {
-                triggerHandler();
+                trials.forEach(function(trial) {
+                    trial.triggerHandler();
+                })
             },
             draw: function() {
                 events.draw();

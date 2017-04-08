@@ -4,8 +4,6 @@ var oldTimestamp = 0,
     floorY = 270,
     gbwidth = 720,
     gbheight = 300,
-    eventsPopMiliSecs = 1 * 1000,
-    eventsPopRandGap = 0.5 * 1000,
     scalefps = 60,
     xMovePerScaledFrame = 8;
 
@@ -16,7 +14,8 @@ var canvas = new Canvas("#gameboard"),
         PLAY: play,
         START: start,
         PAUSE: pause,
-        OVER: over
+        OVER: over,
+        WIN: win
     },
     persisteState = {},
     state = null,
@@ -68,6 +67,7 @@ function draw()
     canvas.ctx.clearRect(0, 0, gbwidth, gbheight);
     canvas.ctx.globalAlpha = 1;
     state.draw();
+    game.draw();
     canvas.end();
 }
 
@@ -77,6 +77,8 @@ function write(str, x , y)
         x = gbwidth / 2;
     if (!y)
         y = gbheight / 2;
+    console.log(str, x, y)
+    canvas.ctx.fillStyle = "#000000";
     canvas.ctx.fillText(str, x, y);
 }
 
@@ -117,10 +119,9 @@ function process(timestamp)
 
 function resetGameplay()
 {
-    delete char;
-    delete game;
     char = new Char();
     game = new Game();
+    events = new Events();
     keyboard.ready = true;
 }
 
