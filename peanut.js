@@ -14,12 +14,15 @@ var canvas = new Canvas("#gameboard"),
     states = {
         PLAY: play,
         START: start,
-        PAUSE: pause
-    },
+        PAUSE: pause,
+        OVER: over
+    }
+    persisteState = {},
     state = null,
     stateName = 'START',
     mouse = new Mouse(canvas.entity),
     char = null,
+    game = null,
     keyboard = new Keyboard();
 
 canvas.ctx.font = "30px Trebuchet MS";
@@ -40,7 +43,13 @@ function setState(name)
     stateName = name;
     if (!states[name])
         return;
-    state = states[name]();
+    if (!persisteState[name]) {
+        persisteState[name] = states[name]();
+    }
+    if (persisteState[name]['init']) {
+        persisteState[name]['init']();
+    }
+    state = persisteState[name];
 }
 
 function update()
@@ -69,11 +78,10 @@ function write(str, x , y)
 
 function onClick()
 {
-    var click = mouse.click;
-
-    if (state.click)
-        click = state.click;
-    click();
+    if (!state.click) {
+        return;
+    }
+    state.click();
 }
 
 function handleKeyboard()
@@ -103,13 +111,19 @@ function process(timestamp)
     window.requestAnimationFrame(process);
 }
 
-function load()
+function resetGameplay()
 {
     delete char;
+    delete game;
     char = new Char();
+    game = new Game();
     keyboard.ready = true;
+}
 
-    setState('START');
+function load()
+{
+    resetGameplay();
+    setState("OVER");
     mouse.entity.addEventListener('click', onClick);
     handleKeyboard();
     process(0);

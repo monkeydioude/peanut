@@ -66,6 +66,7 @@ Char.prototype = {
         this.events.addEvent(cb);
     },
     update: function() {
+//        console.log("char events udpate");
         this.events.update();
     }
 };
@@ -103,7 +104,10 @@ Game.prototype = {
         return this.points = this.goal;
     },
     isOver: function() {
-        return life > 0;
+        return this.life > 0;
+    },
+    lifeDown: function() {
+        this.life--;
     }
 };
 
@@ -132,6 +136,7 @@ Events.prototype = {
         delete this.draw[stateName][key];
     },
     update: function() {
+//        console.log(stateName + " updating events");
         for (var k in this.events[stateName]) {
             if (this.events[stateName][k]() == false) {
                 delete this.events[stateName][k];

@@ -1,16 +1,12 @@
 function play()
 {
     var map = function(ctx) {
-        var floor = function() {
+        return {
+            draw: function() {
             ctx.moveTo(0, floorY);
             ctx.lineTo(gbwidth, floorY);
             ctx.fillStyle="#8b4513";
             ctx.fillRect(0, floorY + 1, gbwidth, gbheight);
-        }
-
-        return {
-            draw: function() {
-                floor();
             }, update: function() {
 
             }
@@ -22,21 +18,13 @@ function play()
         var jumpHeight = 140,
             heightPerFrame = 2,
             currentHeight = 0,
-            tilt = 1;
+            movement = [-jumpHeight, jumpHeight];
 
         char.isBusy = true;
 
         return {
             JUMP: function() {
-                var height = heightPerFrame * tilt;
-                char.addOvY(height);
-                currentHeight += (height);
-
-                if (tilt === 1 && currentHeight >= jumpHeight) {
-                    tilt = -1;
-                }
-
-                if (char.hasReachedGround()) {
+                if (movement.length == 0 && currentHeight == 0) {
                     char.isBusy = false;
                     char.addEvent(function() {
                         char.resetPos();
@@ -44,12 +32,26 @@ function play()
                     });
                     return false;
                 }
+                if (currentHeight === 0) {
+                    currentHeight = movement.pop();
+                }
+                
+                var height = currentHeight % heightPerFrame;
+
+                if (height === 0) {
+                    height = (heightPerFrame * (currentHeight / Math.sqrt(currentHeight * currentHeight)));
+                }
+
+                    console.log(currentHeight, height);
+                char.addOvY(height);
+                currentHeight -= (height);
+                
                 return true;
             }
         }
     };
 
-    var event = function(){
+    var event = function() {
         var events = new Events(),
             nextEventPop = 0;
         
@@ -103,12 +105,14 @@ function play()
         update: function() {
             event.update();
             map.update();
+            char.update();
         },
         click: function() {
             setState('PAUSE');
         },
         keyhit: {
             "SPACE": function() {
+//                console.log(char.isBusy);
                 if (char.isBusy)
                     return;
                 char.addEvent((new characterAction(char)).JUMP);

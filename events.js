@@ -9,7 +9,7 @@ Box.prototype = {
     x: 0,
     y: 0,
     w: 60,
-    h: 30,
+    h: 60,
     update: function() {
         if (char.isHit(this.x1(), this.y1()) || char.isHit(this.x2(), this.y1())) {
             console.log("ouch")
