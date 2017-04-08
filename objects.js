@@ -20,7 +20,7 @@ var Char = function() {
     this.defaultX = this.x;
     this.y = floorY - (this.h / 2);
     this.defaultY = this.y;
-    this.ovY = 0;
+    this.events = new Events();
 };
 
 Char.prototype = {
@@ -40,36 +40,33 @@ Char.prototype = {
         return (this.x + (this.w / 2));
     },
     y1: function() {
-        return this.y - (this.h / 2) - this.ovY;
+        return this.y - (this.h / 2);
     },
     y2: function() {
-        return this.y + (this.h / 2) - this.ovY;
+        return this.y + (this.h / 2);
     },
     setOvY: function(ovY) {
-        this.ovY = ovY;
+        this.y = ovY;
     },
     addOvY: function(ovY) {
-        this.setOvY(this.ovY + ovY);
+        this.setOvY(this.y - ovY);
     },
-    eventIt: -1,
-    events : {},
+    hasReachedGround: function() {
+        return this.defaultY == this.y;
+    },
+    resetPos: function() {
+        console.log("resetPos");
+        this.x = this.defaultX;
+        this.y = this.defaultY;
+    },
+    isHit: function(x, y) {
+        return (x >= this.x1() && x <= this.x2()) && (y >= this.y1() && y <= this.y2());
+    },
     addEvent: function(cb) {
-        this.eventIt++;
-        this.events[this.eventIt] = cb;
-        return this.eventIt;
-    },
-    deleteEvent: function(key) {
-        delete this.events[key];
+        this.events.addEvent(cb);
     },
     update: function() {
-        for (var k in this.events) {
-            if (this.events[k]() == false) {
-                delete this.events[k];
-            }
-        }
-    },
-    isOnGround: function() {
-        return this.defaultX == this.x && this.defaultY == (this.y + this.ovY);
+        this.events.update();
     }
 };
 
@@ -88,7 +85,11 @@ Keyboard.prototype = {
     hit: null,
     ready: true,
     codes: {
-        32: 'SPACE'
+        13: "ENTER",
+        27: "ESC",
+        32: "SPACE",
+        38: "UP",
+        80: "P"
     }
 };
 
@@ -105,3 +106,45 @@ Game.prototype = {
         return life > 0;
     }
 };
+
+var Events = function() {
+    for (var s in states) {
+        this.events[s] = {};
+        this.draws[s] = {};
+    }
+}
+
+Events.prototype = {
+    eventIt: -1,
+    events : {},
+    draws: {},
+    addEvent: function(updateCb, drawCb) {
+        this.eventIt++;
+        this.events[stateName][this.eventIt] = updateCb;
+        if (drawCb)
+            this.draws[stateName][this.eventIt] = drawCb;
+        return this.eventIt;
+    },
+    deleteEvent: function(key) {
+        delete this.events[stateName][key];
+    },
+    deleteDraw: function(key) {
+        delete this.draw[stateName][key];
+    },
+    update: function() {
+        for (var k in this.events[stateName]) {
+            if (this.events[stateName][k]() == false) {
+                delete this.events[stateName][k];
+            }
+        }
+    },
+    draw: function() {
+        for (var k in this.draws[stateName]) {
+            if (!this.events[stateName][k]) {
+                delete this.draws[stateName][k];
+            } else {
+                this.draws[stateName][k]();
+            }
+        }
+    }
+}

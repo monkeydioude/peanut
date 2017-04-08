@@ -1,8 +1,13 @@
+var fps = 60;
 var oldTimestamp = 0,
-    fps = 100 / 60,
+    fpsTime = 100 / fps,
     floorY = 270,
     gbwidth = 720,
-    gbheight = 300;
+    gbheight = 300,
+    eventsPopMiliSecs = 1 * 1000,
+    eventsPopRandGap = 0.5 * 1000,
+    scalefps = 60,
+    xMovePerScaledFrame = 2;
 
 /* =============================== */
 var canvas = new Canvas("#gameboard"),
@@ -11,7 +16,8 @@ var canvas = new Canvas("#gameboard"),
         START: start,
         PAUSE: pause
     },
-    state = 'START',
+    state = null,
+    stateName = 'START',
     mouse = new Mouse(canvas.entity),
     char = null,
     keyboard = new Keyboard();
@@ -20,8 +26,18 @@ canvas.ctx.font = "30px Trebuchet MS";
 canvas.ctx.textAlign = "center";
 /* =============================== */
 
+function getScaledXMove()
+{
+    return (scalefps / fps) * xMovePerScaledFrame;
+}
+
+function hexColorGen() {
+    return '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
+}
+
 function setState(name)
 {
+    stateName = name;
     if (!states[name])
         return;
     state = states[name]();
@@ -80,7 +96,7 @@ function handleKeyboard()
 
 function process(timestamp)
 {
-    if (timestamp - oldTimestamp > fps) {
+    if (timestamp - oldTimestamp > fpsTime) {
         update();
         draw();
     }
@@ -92,7 +108,7 @@ function load()
     delete char;
     char = new Char();
     keyboard.ready = true;
-    
+
     setState('START');
     mouse.entity.addEventListener('click', onClick);
     handleKeyboard();

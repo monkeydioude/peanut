@@ -2,12 +2,17 @@ function start()
 {
     return {
         draw: function() {
-            write("CLIQUES POUR COMMENCER");
+            write("CLIQUE ou ENTREE POUR COMMENCER");
         },
         update: function() {
         },
         click: function() {
             setState('PLAY');
+        },
+        keyhit:  {
+            "ENTER": function() {
+                setState("PLAY")
+            }
         }
     }
 }

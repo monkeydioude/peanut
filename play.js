@@ -19,8 +19,8 @@ function play()
 
     var characterAction = function(char)
     {
-        var jumpHeight = 70,
-            heightPerFrame = 10,
+        var jumpHeight = 140,
+            heightPerFrame = 2,
             currentHeight = 0,
             tilt = 1;
 
@@ -36,8 +36,12 @@ function play()
                     tilt = -1;
                 }
 
-                if (char.isOnGround()) {
+                if (char.hasReachedGround()) {
                     char.isBusy = false;
+                    char.addEvent(function() {
+                        char.resetPos();
+                        return false;
+                    });
                     return false;
                 }
                 return true;
@@ -45,22 +49,72 @@ function play()
         }
     };
 
+    var event = function(){
+        var events = new Events(),
+            nextEventPop = 0;
+        
+        var generateNextEventPop = function() {
+            return Math.round(fps * ((eventsPopMiliSecs + (Math.random() * eventsPopRandGap)) / 1000));
+        }
+
+        var resetNextEventPop = function() {
+            nextEventPop = generateNextEventPop();
+        }
+
+        var shouldTriggerEvent = function() {
+            return nextEventPop <= 0;
+        };
+
+        var triggerHandler = function() {
+            if (!shouldTriggerEvent()) {
+                nextEventPop--;
+                return;
+            }
+            resetNextEventPop();
+            var box = new Box();
+            events.addEvent(
+                function() {
+                    return box.update();
+                },
+                function() {
+                    box.draw();
+                });
+        };
+
+        resetNextEventPop();
+
+        return {
+            update: function() {
+                triggerHandler();
+                events.update();
+            },
+            draw: function() {
+                events.draw();
+            }
+        }
+    }();
+
     return {
         draw: function() {
             map.draw();
+            event.draw();
             char.draw();
         },
         update: function() {
+            event.update();
             map.update();
         },
         click: function() {
             setState('PAUSE');
         },
         keyhit: {
-            'SPACE': function() {
+            "SPACE": function() {
                 if (char.isBusy)
                     return;
                 char.addEvent((new characterAction(char)).JUMP);
+            },
+            "P": function() {
+                setState("PAUSE");
             }
         }
     }

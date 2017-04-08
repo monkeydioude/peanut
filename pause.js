@@ -11,7 +11,7 @@ function pause()
                 ctx.fillStyle = "#551A8B";
                 ctx.fillRect(0, 0, gbwidth, gbheight);
                 ctx.globalAlpha = 1;
-                write("CLIQUES POUR CONTINUER");
+                write("CLIQUE OU ECHAP POUR CONTINUER");
             }
         }
     }(canvas.ctx);
@@ -23,7 +23,12 @@ function pause()
         update: function() {
         },
         click: function() {
-            setState('PLAY');
+            setState("PLAY");
+        },
+        keyhit: {
+            "ESC": function() {
+                setState("PLAY");
+            }
         }
     }
 }
