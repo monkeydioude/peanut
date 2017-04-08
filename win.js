@@ -11,13 +11,41 @@ function win()
             canvas.ctx.fillStyle = color;
             canvas.ctx.fillRect(0, 0, gbwidth, gbheight);
             canvas.ctx.globalAlpha = 1;
-            write("Gagnééééééééééééé");
+            write("Gagnééééééééééééé, clique pour avoir ton cadeau");
         },
         init: function() {
             color = hexColorGen();
+            runninSoundStop();
+            winSound();
+        },
+        click: function() {
+            setState("MINECRAFT");
         },
         keyhit: {
             "SPACE": function() {
+                resetGameplay();
+                setState("PLAY")
+            }
+        }
+    }
+}
+
+function minecraft()
+{
+    return {
+        update: function() {},
+        draw: function() {
+            drawWin(Math.random() * gbwidth, Math.random() * gbheight);
+        },
+        init: function() {
+            color = hexColorGen();
+            winSound();
+        },
+        click: function() {
+            setState("MINECRAFT");
+        },
+        keyhit: {
+            "ENTER": function() {
                 resetGameplay();
                 setState("PLAY")
             }

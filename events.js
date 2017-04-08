@@ -1,13 +1,46 @@
+var isInvincible = false;
+
 var wounded = function()
 {
+    if (isInvincible) {
+        return;
+    }
+    var woundedFrame = [false, true, true];
+    var invincibleFrame = [false, true, true, true, true, true, true, true, true, true, true, true, true];
     game.lifeDown();
     if (game.isOver()) {
         setState("OVER");
     }
+    events.addEvent(
+        function() {
+            return woundedFrame.pop();
+        },
+        function() {
+            canvas.ctx.globalAlpha = 0.2;
+            canvas.ctx.fillStyle = "#ff0000";
+            canvas.ctx.fillRect(0, 0, gbwidth, gbheight);
+            canvas.ctx.globalAlpha = 1;
+        }
+    );
+
+    events.addEvent(
+        function() {
+            isInvincible = invincibleFrame.pop();
+            return isInvincible;
+        }
+    )
 };
 
+var peanutCounter = 0;
+
 var healed = function() {
-    game.lifeUp();
+    peanutCounter++;
+    if (peanutCounter % 3 == 0) {
+        game.lifeUp();
+        peanutCounter = 0;
+        return true;
+    }
+    return false;
 };
 
 var winPoints = function() {
@@ -32,6 +65,7 @@ Box.prototype = {
     update: function() {
         if (char.isHit(this.x1(), this.y1()) || char.isHit(this.x2(), this.y1())) {
             wounded();
+            bumpSound();
             return false;
         }
         if (this.x2() <= 0) {
@@ -41,8 +75,7 @@ Box.prototype = {
         return true;
     },
     draw: function() {
-        canvas.ctx.fillStyle = this.color;
-        canvas.ctx.fillRect(this.x1(), this.y1(), this.w, this.h);
+        drawCrate(this.x1(), this.y1(), this.w, this.h);
         return true;
     },
     x1: function() {
@@ -66,8 +99,8 @@ var Cornichon = function()
 Cornichon.prototype = {
     x: 0,
     y: 0,
-    w: 10,
-    h: 10,
+    w: 40,
+    h: 40,
     update: function() {
         if (
             char.isHit(this.x1(), this.y1())
@@ -76,6 +109,7 @@ Cornichon.prototype = {
             || char.isHit(this.x1(), this.y2())
         ) {
             wounded();
+            bumpSound();
             return false;
         }
         if (this.x2() <= 0) {
@@ -85,8 +119,7 @@ Cornichon.prototype = {
         return true;
     },
     draw: function() {
-        canvas.ctx.fillStyle = this.color;
-        canvas.ctx.fillRect(this.x1(), this.y1(), this.w, this.h);
+        drawImg("img/poo.png", this.x1(), this.y1(), this.w, this.h, 300, 300);
         return true;
     },
     x1: function() {
@@ -114,8 +147,8 @@ var Peanut = function()
 Peanut.prototype = {
     x: 0,
     y: 0,
-    w: 10,
-    h: 10,
+    w: 30,
+    h: 30,
     update: function() {
         if (
             char.isHit(this.x1(), this.y1())
@@ -124,7 +157,11 @@ Peanut.prototype = {
             || char.isHit(this.x1(), this.y2())
         ) {
             winPoints();
-            healed();
+            if (healed()) {
+                upSound();
+            } else {
+                peanutSound();
+            }
             return false;
         }
         if (this.x2() <= 0) {
@@ -134,8 +171,7 @@ Peanut.prototype = {
         return true;
     },
     draw: function() {
-        canvas.ctx.fillStyle = this.color;
-        canvas.ctx.fillRect(this.x1(), this.y1(), this.w, this.h);
+        drawImg("img/peanut.png", this.x1(), this.y1(), this.w, this.h, 128, 128);
         return true;
     },
     x1: function() {

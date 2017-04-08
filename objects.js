@@ -26,12 +26,13 @@ Char.prototype = {
     defaultX: 0,
     x: 0,
     y: 0,
-    w: 50,
-    h: 70,
+    w: 34,
+    h: 100,
     ovY : 0,
     isBusy: false,
     draw: function() {
-        canvas.ctx.rect(this.x1(), this.y1(), this.w, this.h - 1);
+//        canvas.ctx.rect(this.x1(), this.y1(), this.w, this.h - 1);
+        drawImg("img/anna.png", this.x1(), this.y1(), this.w, this.h - 1, 514, 1494);
     },
     x1: function() {
         return (this.x - (this.w / 2));
@@ -55,7 +56,6 @@ Char.prototype = {
         return this.defaultY == this.y;
     },
     resetPos: function() {
-        console.log("resetPos");
         this.x = this.defaultX;
         this.y = this.defaultY;
     },
@@ -97,8 +97,8 @@ Keyboard.prototype = {
 var Game = function(){}
 
 Game.prototype = {
-    maxLife:3,
-    life: 3,
+    maxLife:5,
+    life: 5,
     points: 0,
     goal: 20,
     isCompleted: function () {
@@ -116,17 +116,17 @@ Game.prototype = {
         }
     },
     draw: function() {
-        var heartSize = 25,
-            startY = 20,
+        var heartSize = 30,
+            startY = 10,
             startX = gbwidth - (this.maxLife * heartSize),
             str = "";
         for (var i = 0; i < this.life; i++) {
-            str += "<3 ";
+            drawFullHeart(startX + (i * heartSize), startY, heartSize, heartSize);
         }
         for (i = 0; i < (this.maxLife - this.life); i++) {
-            str += "</3 ";
+            drawEmptyHeart(startX + ((this.life + i) * heartSize), startY, heartSize, heartSize);
         }
-        write(str, startX, startY);
+        write(this.points + "/" + this.goal, 40, 40);
     }
 };
 
@@ -155,7 +155,6 @@ Events.prototype = {
         delete this.draw[stateName][key];
     },
     update: function() {
-//        console.log(this.events[stateName]);
         for (var k in this.events[stateName]) {
             if (this.events[stateName][k] && this.events[stateName][k]() == false) {
                 delete this.events[stateName][k];

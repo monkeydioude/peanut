@@ -3,10 +3,10 @@ function play()
     var map = function(ctx) {
         return {
             draw: function() {
-            ctx.moveTo(0, floorY);
-            ctx.lineTo(gbwidth, floorY);
-            ctx.fillStyle="#8b4513";
-            ctx.fillRect(0, floorY + 1, gbwidth, gbheight);
+                ctx.moveTo(0, floorY);
+                ctx.lineTo(gbwidth, floorY);
+                ctx.fillStyle="#8b4513";
+                ctx.fillRect(0, floorY + 1, gbwidth, gbheight);
             }, update: function() {
 
             }
@@ -15,7 +15,7 @@ function play()
 
     var characterAction = function(char)
     {
-        var jumpHeight = 200,
+        var jumpHeight = 175,
             heightPerFrame = 10,
             currentHeight = 0,
             movement = [-jumpHeight, jumpHeight];
@@ -42,7 +42,6 @@ function play()
                     height = (heightPerFrame * (currentHeight / Math.sqrt(currentHeight * currentHeight)));
                 }
 
-                    console.log(currentHeight, height);
                 char.addOvY(height);
                 currentHeight -= (height);
                 
@@ -54,8 +53,8 @@ function play()
     var event = function() {
         var trials = [
             new Trial(1, 0.5, Box),
-            new Trial(0.75, 0.3, Cornichon),
-            new Trial(0.5, 0.4, Peanut)
+            new Trial(2.5, 1, Cornichon),
+            new Trial(0.4, 0.75, Peanut)
         ];
 
         return {
@@ -82,18 +81,22 @@ function play()
             char.update();
         },
         click: function() {
-            setState('PAUSE');
         },
         keyhit: {
             "SPACE": function() {
-//                console.log(char.isBusy);
                 if (char.isBusy)
                     return;
+                jumpSound();
                 events.addEvent((new characterAction(char)).JUMP);
             },
             "P": function() {
                 setState("PAUSE");
             }
+        },
+        init: function() {
+            isInvincible = false;
+            runningSound();
+            stopWinSound();
         }
     }
 }

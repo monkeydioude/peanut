@@ -5,7 +5,7 @@ var oldTimestamp = 0,
     gbwidth = 720,
     gbheight = 300,
     scalefps = 60,
-    xMovePerScaledFrame = 8;
+    xMovePerScaledFrame = 7;
 
 
 /* =============================== */
@@ -15,7 +15,8 @@ var canvas = new Canvas("#gameboard"),
         START: start,
         PAUSE: pause,
         OVER: over,
-        WIN: win
+        WIN: win,
+        MINECRAFT: minecraft
     },
     persisteState = {},
     state = null,
@@ -77,7 +78,6 @@ function write(str, x , y)
         x = gbwidth / 2;
     if (!y)
         y = gbheight / 2;
-    console.log(str, x, y)
     canvas.ctx.fillStyle = "#000000";
     canvas.ctx.fillText(str, x, y);
 }

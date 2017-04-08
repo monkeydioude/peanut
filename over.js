@@ -14,10 +14,12 @@ function over()
             write("GAME OVER");
         },
         init: function() {
+            runninSoundStop();
+            overSound();
             color = hexColorGen();
         },
         keyhit: {
-            "SPACE": function() {
+            "ENTER": function() {
                 resetGameplay();
                 setState("PLAY")
             }
