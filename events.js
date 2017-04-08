@@ -1,3 +1,8 @@
+var wounded = function()
+{
+    game.lifeDown();
+};
+
 var Box = function()
 {
     this.x = gbwidth;
@@ -36,3 +41,10 @@ Box.prototype = {
         return this.x + (this.w / 2);
     }
 };
+
+var Cornichon = function()
+{
+
+}
+
+Cornichon

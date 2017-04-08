@@ -20,7 +20,6 @@ var Char = function() {
     this.defaultX = this.x;
     this.y = floorY - (this.h / 2);
     this.defaultY = this.y;
-    this.events = new Events();
 };
 
 Char.prototype = {
@@ -29,6 +28,7 @@ Char.prototype = {
     y: 0,
     w: 50,
     h: 70,
+    ovY : 0,
     isBusy: false,
     draw: function() {
         canvas.ctx.rect(this.x1(), this.y1(), this.w, this.h - 1);
@@ -46,10 +46,10 @@ Char.prototype = {
         return this.y + (this.h / 2);
     },
     setOvY: function(ovY) {
-        this.y = ovY;
+        this.ovY = ovY;
     },
     addOvY: function(ovY) {
-        this.setOvY(this.y - ovY);
+        this.setOvY(this.ovY + ovY);
     },
     hasReachedGround: function() {
         return this.defaultY == this.y;
@@ -62,12 +62,11 @@ Char.prototype = {
     isHit: function(x, y) {
         return (x >= this.x1() && x <= this.x2()) && (y >= this.y1() && y <= this.y2());
     },
-    addEvent: function(cb) {
-        this.events.addEvent(cb);
-    },
     update: function() {
 //        console.log("char events udpate");
-        this.events.update();
+//        this.events.update();
+        this.y -= this.ovY;
+        this.ovY = 0;
     }
 };
 
@@ -136,7 +135,7 @@ Events.prototype = {
         delete this.draw[stateName][key];
     },
     update: function() {
-//        console.log(stateName + " updating events");
+//        console.log(this.events[stateName]);
         for (var k in this.events[stateName]) {
             if (this.events[stateName][k]() == false) {
                 delete this.events[stateName][k];

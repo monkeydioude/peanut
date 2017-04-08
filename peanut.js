@@ -7,7 +7,8 @@ var oldTimestamp = 0,
     eventsPopMiliSecs = 1 * 1000,
     eventsPopRandGap = 0.5 * 1000,
     scalefps = 60,
-    xMovePerScaledFrame = 2;
+    xMovePerScaledFrame = 8;
+
 
 /* =============================== */
 var canvas = new Canvas("#gameboard"),
@@ -16,7 +17,7 @@ var canvas = new Canvas("#gameboard"),
         START: start,
         PAUSE: pause,
         OVER: over
-    }
+    },
     persisteState = {},
     state = null,
     stateName = 'START',
@@ -24,6 +25,8 @@ var canvas = new Canvas("#gameboard"),
     char = null,
     game = null,
     keyboard = new Keyboard();
+
+var events = new Events();
 
 canvas.ctx.font = "30px Trebuchet MS";
 canvas.ctx.textAlign = "center";
@@ -54,6 +57,7 @@ function setState(name)
 
 function update()
 {
+    events.update();
     char.update();
     state.update();
 }
@@ -123,7 +127,7 @@ function resetGameplay()
 function load()
 {
     resetGameplay();
-    setState("OVER");
+    setState("START");
     mouse.entity.addEventListener('click', onClick);
     handleKeyboard();
     process(0);

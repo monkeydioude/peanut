@@ -15,8 +15,8 @@ function play()
 
     var characterAction = function(char)
     {
-        var jumpHeight = 140,
-            heightPerFrame = 2,
+        var jumpHeight = 150,
+            heightPerFrame = 10,
             currentHeight = 0,
             movement = [-jumpHeight, jumpHeight];
 
@@ -24,9 +24,10 @@ function play()
 
         return {
             JUMP: function() {
+                console.log('jumping')
                 if (movement.length == 0 && currentHeight == 0) {
                     char.isBusy = false;
-                    char.addEvent(function() {
+                    events.addEvent(function() {
                         char.resetPos();
                         return false;
                     });
@@ -52,21 +53,29 @@ function play()
     };
 
     var event = function() {
-        var events = new Events(),
-            nextEventPop = 0;
+        var nextEventPop = 0, 
+            trials = [
+                Box,
+                Box,
+                
+            ];
         
         var generateNextEventPop = function() {
             return Math.round(fps * ((eventsPopMiliSecs + (Math.random() * eventsPopRandGap)) / 1000));
-        }
+        };
 
         var resetNextEventPop = function() {
             nextEventPop = generateNextEventPop();
-        }
+        };
 
         var shouldTriggerEvent = function() {
             return nextEventPop <= 0;
         };
 
+        var getNextEvent = function() {
+            
+        }
+        
         var triggerHandler = function() {
             if (!shouldTriggerEvent()) {
                 nextEventPop--;
@@ -88,7 +97,6 @@ function play()
         return {
             update: function() {
                 triggerHandler();
-                events.update();
             },
             draw: function() {
                 events.draw();
@@ -115,7 +123,7 @@ function play()
 //                console.log(char.isBusy);
                 if (char.isBusy)
                     return;
-                char.addEvent((new characterAction(char)).JUMP);
+                events.addEvent((new characterAction(char)).JUMP);
             },
             "P": function() {
                 setState("PAUSE");
